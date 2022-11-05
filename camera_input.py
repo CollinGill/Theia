@@ -1,21 +1,17 @@
-import cv2
+import cv2 as cv
 
-def open() -> None:
+# Opens camera and returns capture object
+def open() -> cv.VideoCapture:
     cap = cv2.VideoCapture(0)
 
     if not cap.isOpened():
         print("Cannot open camera...")
         exit()
 
-    while True:
-        ret, frame = cap.read()
+    return cap
 
-        if not ret:
-            print("Can't receive frame. Exiting...")
-            exit()
 
-        if cv2.waitKey(1) == ord('q'):
-            break
-
-    cap.release()
-    cv2.destroyAllWindows()
+# Closes camera
+def close(capture: cv.VideoCapture) -> None:
+    capture.release()
+    cv.destroyAllWildows()
