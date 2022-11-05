@@ -1,8 +1,8 @@
 import cv2 as cv
 import numpy as np
 
-from PySide6.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QWidget, QLabel
-from PySide6.QtCore import Signal, Slot, Qt, QThread
+from PySide6.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QWidget, QLabel, QFrame
+from PySide6.QtCore import Signal, Slot, QThread 
 from PySide6 import QtCore, QtGui
 
 class VideoThread(QThread):
@@ -33,29 +33,43 @@ class MainWindow(QMainWindow):
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
 
-        # Video Input
+        # Video Input Widget
         self.disp_w, self.disp_h = 640, 480
         self.frame = QLabel()
         self.frame.resize(self.disp_w, self.disp_h)
 
         # Scan Button
+        self.button = QPushButton("Scan")
+        self.button.setStyleSheet("QPushButton{font-size: 18pt;}")
+
         self.button_widget = QWidget()
         self.button_widget_layout = QVBoxLayout(self.button_widget)
         self.button_widget_layout.setAlignment(QtCore.Qt.AlignHCenter)
-
-        self.button = QPushButton("Scan")
-
         self.button_widget_layout.addWidget(self.button)
 
+        # Output Widget
+        self.output_label = QLabel()
+        self.output_label.setStyleSheet("QLabel{font-size: 18pt;}")
+        self.output_label.setText("OUTPUT TEXT")
+
+        self.output_label_widget = QWidget()
+        self.output_label_widget_layout = QVBoxLayout(self.output_label_widget)
+        self.output_label_widget_layout.setAlignment(QtCore.Qt.AlignHCenter)
+        self.output_label_widget_layout.addWidget(self.output_label)
+
+        # Adding all the widgets to the layout
         self.layout = QVBoxLayout(self.central_widget)
+        self.layout.setAlignment(QtCore.Qt.AlignHCenter)
         self.layout.addWidget(self.frame)
         self.layout.addWidget(self.button_widget)
+        self.layout.addWidget(self.output_label_widget)
 
+        # video feed thread
         self.thread = VideoThread()
         self.thread.pixmap_signal.connect(self.update_image)
         self.thread.start()
 
-    def close(self, event):
+    def closeEvent(self, event):
         self.thread.stop()
         event.accept()
 

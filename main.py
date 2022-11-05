@@ -5,7 +5,7 @@ def main():
     app = QApplication([])
     window = widgets.MainWindow()
     window.show()
-    app.exec_()
+    app.exec()
 
 if __name__ == '__main__':
     main()
