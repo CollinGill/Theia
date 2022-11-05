@@ -1,5 +1,7 @@
+import camera_input
+
 def main():
-    print('Hello world!')
+    camera_input.open()
 
 if __name__ == '__main__':
     main()
