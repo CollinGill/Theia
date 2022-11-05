@@ -2,7 +2,7 @@ import cv2 as cv
 
 # Opens camera and returns capture object
 def open() -> cv.VideoCapture:
-    cap = cv2.VideoCapture(0)
+    cap = cv.VideoCapture(0)
 
     if not cap.isOpened():
         print("Cannot open camera...")
@@ -14,4 +14,4 @@ def open() -> cv.VideoCapture:
 # Closes camera
 def close(capture: cv.VideoCapture) -> None:
     capture.release()
-    cv.destroyAllWildows()
+    cv.destroyAllWindows()
