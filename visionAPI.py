@@ -20,7 +20,7 @@ def textConvert(input):
            'yen':           'JPY',
            '円':            'JPY',
            '¥':             'JPY',
-           'JPY':           'JPY',
+           'jpy':           'JPY',
            'sterling':      'GBP',
            'pound':         'GBP',
            'sterlings':     'GBP',
@@ -29,12 +29,13 @@ def textConvert(input):
            'gpb':           'GPB',
            '元':            'CNY',
            'renminbi':      'CNY',
-           'CNY':           'CNY',
+           'cny':           'CNY',
            'austrailian':   'AUD',
            'aud':           'AUD',
            'a$':            'AUD',
            'cad':           'CAD',
-           'c$':            'CAD'}
+           'c$':            'CAD',
+           'C$':            'CAD'}
 
     splitInput = ["".join(x) for _, x in itertools.groupby(input, key=str.isdigit)]
     for count, value in enumerate(splitInput):
