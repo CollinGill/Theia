@@ -1,13 +1,9 @@
 import cv2 as cv
 import numpy as np
-import math
-import pyaudio
-import collections
-import audioop
-import time
-import wave
+import sounddevice as sd
+import scipy.io.wavfile as doot
+import wavio as wv
 import os
-import subprocess
 
 from PySide6.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QGraphicsDropShadowEffect
 from PySide6.QtCore import Signal, Slot, QThread 
@@ -92,11 +88,6 @@ class MainWindow(QMainWindow):
         self.text_button.clicked.connect(self.get_translation)
         self.buttons.append(self.text_button)
 
-        self.speech_button = QPushButton("Speech Transcription")
-        self.speech_button.setStyleSheet(self.button_stylesheet)
-        self.speech_button.clicked.connect(self.get_transcription)
-        self.buttons.append(self.speech_button)
-
         self.button_widget = QWidget()
         self.button_widget_layout = QHBoxLayout(self.button_widget)
         self.button_widget_layout.setAlignment(QtCore.Qt.AlignCenter)
@@ -163,46 +154,3 @@ class MainWindow(QMainWindow):
         _, text = translationAPI.get_output()
 
         self.output_label.setText(text)
-
-    def get_transcription(self):
-        filename = "output/output.wav"
-        chunk = 1024
-        format = pyaudio.paInt16
-        channels = 1
-        rate = 44100
-        seconds = 5
-
-        p = pyaudio.PyAudio()
-
-        print('RECORDING')
-
-        stream = p.open(format=format, 
-                        channels=channels, 
-                        rate=rate, 
-                        input=True, 
-                        # output=True, 
-                        frames_per_buffer=chunk)
-
-        frames = []
-
-
-
-        for i in range(0, int(rate / chunk * seconds)):
-        # while 
-            data = stream.read(chunk)
-            frames.append(data)
-
-
-        stream.stop_stream()
-        stream.close()
-        p.terminate()
-
-        print('finished recording')
-
-        wf = wave.open(filename, "wb")
-        wf.setnchannels(channels)
-        wf.setsampwidth(p.get_sample_size(format))
-        wf.setframerate(rate)
-        wf.writeframes(b''.join(frames))
-        wf.close()
-        os.system(f"flac {filename} -o {filename[:-4] + '.flac'} && rm {filename}")
