@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 
 theia-367718-7a7b61c031e5.json
+output/*

@@ -1,5 +1,6 @@
 import cv2 as cv
 import numpy as np
+import visionAPI
 
 from PySide6.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QWidget, QLabel, QFrame
 from PySide6.QtCore import Signal, Slot, QThread 
@@ -52,7 +53,7 @@ class MainWindow(QMainWindow):
         # Output Widget
         self.output_label = QLabel()
         self.output_label.setStyleSheet("QLabel{font-size: 18pt;}")
-        self.output_label.setText("OUTPUT TEXT")
+        self.output_label.setText("")
 
         self.output_label_widget = QWidget()
         self.output_label_widget_layout = QVBoxLayout(self.output_label_widget)
@@ -92,7 +93,5 @@ class MainWindow(QMainWindow):
     def scan_image(self):
         cv.imwrite("output/currency.jpeg", self.img)
 
-        '''
         original, usd = visionAPI.get_output()
         self.output_label.setText(f'{original} = {usd}')
-        '''
