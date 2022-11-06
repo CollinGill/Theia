@@ -39,10 +39,11 @@ class MainWindow(QMainWindow):
         self.disp_w, self.disp_h = 640, 480
         self.frame = QLabel()
         self.frame.resize(self.disp_w, self.disp_h)
+        #self.frame.setFrameStyle()
 
         # Scan Button
         self.button = QPushButton("Scan")
-        self.button.setStyleSheet("QPushButton{font-size: 18pt;}")
+        self.button.setStyleSheet("QPushButton{font-size: 24pt;}")
         self.button.clicked.connect(self.scan_image)
 
         self.button_widget = QWidget()
@@ -52,7 +53,7 @@ class MainWindow(QMainWindow):
 
         # Output Widget
         self.output_label = QLabel()
-        self.output_label.setStyleSheet("QLabel{font-size: 18pt;}")
+        self.output_label.setStyleSheet("QLabel{font-size: 24pt;}")
         self.output_label.setText("")
 
         self.output_label_widget = QWidget()
@@ -91,7 +92,7 @@ class MainWindow(QMainWindow):
         return QtGui.QPixmap.fromImage(scaled)
 
     def scan_image(self):
-        cv.imwrite("output/currency.jpeg", self.img)
+        cv.imwrite("output/currency.jpg", self.img)
 
         original, usd = visionAPI.get_output()
         self.output_label.setText(f'{original} = {usd}')
