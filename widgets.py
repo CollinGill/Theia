@@ -26,6 +26,7 @@ class VideoThread(QThread):
 
 class MainWindow(QMainWindow):
     def __init__(self):
+        self.img = None
         super().__init__()
         self.setWindowTitle("Theia")
         self.showMaximized()
@@ -41,6 +42,7 @@ class MainWindow(QMainWindow):
         # Scan Button
         self.button = QPushButton("Scan")
         self.button.setStyleSheet("QPushButton{font-size: 18pt;}")
+        self.button.clicked.connect(self.scan_image)
 
         self.button_widget = QWidget()
         self.button_widget_layout = QVBoxLayout(self.button_widget)
@@ -75,6 +77,7 @@ class MainWindow(QMainWindow):
 
     @Slot(np.ndarray)
     def update_image(self, frame):
+        self.img = frame
         qt_frame = self.convert_frame(frame)
         self.frame.setPixmap(qt_frame)
 
@@ -85,3 +88,11 @@ class MainWindow(QMainWindow):
         qt_fmt = QtGui.QImage(rgb_image, width, height, bytes, QtGui.QImage.Format.Format_RGB888)
         scaled = qt_fmt.scaled(self.disp_w, self.disp_h, QtCore.Qt.KeepAspectRatio)
         return QtGui.QPixmap.fromImage(scaled)
+
+    def scan_image(self):
+        cv.imwrite("output/currency.jpeg", self.img)
+
+        '''
+        original, usd = visionAPI.get_output()
+        self.output_label.setText(f'{original} = {usd}')
+        '''
