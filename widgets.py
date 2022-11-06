@@ -1,9 +1,5 @@
 import cv2 as cv
 import numpy as np
-import sounddevice as sd
-import scipy.io.wavfile as doot
-import wavio as wv
-import os
 
 from PySide6.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QGraphicsDropShadowEffect
 from PySide6.QtCore import Signal, Slot, QThread 
@@ -88,6 +84,11 @@ class MainWindow(QMainWindow):
         self.text_button.clicked.connect(self.get_translation)
         self.buttons.append(self.text_button)
 
+        self.speech_button = QPushButton("Speech Transcription")
+        self.speech_button.setStyleSheet(self.button_stylesheet)
+        self.speech_button.clicked.connect(self.get_translation)
+        self.buttons.append(self.speech_button)
+
         self.button_widget = QWidget()
         self.button_widget_layout = QHBoxLayout(self.button_widget)
         self.button_widget_layout.setAlignment(QtCore.Qt.AlignCenter)
@@ -151,6 +152,13 @@ class MainWindow(QMainWindow):
     def get_translation(self):
         cv.imwrite("output/translation.jpg", self.img)
 
-        _, text = translationAPI.get_output()
+        lang, text = translationAPI.get_output()
 
-        self.output_label.setText(text)
+        output_text = ""
+        output_text += "" if lang == "🏳" else lang
+        output_text += "\n" + text
+
+        self.output_label.setText(output_text)
+
+    def get_transcription(self):
+        print("Gabe fix this plz")
