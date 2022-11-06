@@ -35,7 +35,10 @@ def textConvert(input):
            'a$':            'AUD',
            'cad':           'CAD',
            'c$':            'CAD',
-           'C$':            'CAD'}
+           'C$':            'CAD',
+           '₹':             'INR',
+           'rupee':         'INR',
+           'rupees':        'INR'}
 
     splitInput = ["".join(x) for _, x in itertools.groupby(input, key=str.isdigit)]
     for count, value in enumerate(splitInput):
