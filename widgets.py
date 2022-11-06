@@ -2,7 +2,7 @@ import cv2 as cv
 import numpy as np
 import visionAPI
 
-from PySide6.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QWidget, QLabel, QFrame
+from PySide6.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel
 from PySide6.QtCore import Signal, Slot, QThread 
 from PySide6 import QtCore, QtGui
 
@@ -36,20 +36,10 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.central_widget)
 
         # Video Input Widget
-        self.disp_w, self.disp_h = 640, 480
+        self.disp_w, self.disp_h = 1.5 * 640, 1.5 * 480
         self.frame = QLabel()
         self.frame.resize(self.disp_w, self.disp_h)
-        #self.frame.setFrameStyle()
-
-        # Scan Button
-        self.button = QPushButton("Scan")
-        self.button.setStyleSheet("QPushButton{font-size: 24pt;}")
-        self.button.clicked.connect(self.scan_image)
-
-        self.button_widget = QWidget()
-        self.button_widget_layout = QVBoxLayout(self.button_widget)
-        self.button_widget_layout.setAlignment(QtCore.Qt.AlignHCenter)
-        self.button_widget_layout.addWidget(self.button)
+        self.frame.setStyleSheet("border: 10px solid black; border-radius: 15%;")
 
         # Output Widget
         self.output_label = QLabel()
@@ -61,12 +51,52 @@ class MainWindow(QMainWindow):
         self.output_label_widget_layout.setAlignment(QtCore.Qt.AlignHCenter)
         self.output_label_widget_layout.addWidget(self.output_label)
 
+        # Top Widget
+        self.top = QWidget()
+        self.top_layout = QHBoxLayout(self.top)
+        self.top_layout.setAlignment(QtCore.Qt.AlignLeft)
+        self.top_layout.addWidget(self.frame)
+        self.top_layout.addStretch()
+        self.top_layout.addWidget(self.output_label)
+        self.top_layout.addStretch()
+
+        # Scan Button
+        self.button_stylesheet = "QPushButton{font-size: 24pt; border: 5px solid black; border-radius: 15%; padding: 5px;}"
+        self.buttons = []
+
+
+        self.quit_button = QPushButton("Quit")
+        self.quit_button.clicked.connect(self.abort)
+        self.quit_button.setStyleSheet(self.button_stylesheet)
+        self.buttons.append(self.quit_button)
+
+        self.scan_button = QPushButton("Scan")
+        self.scan_button.setStyleSheet(self.button_stylesheet)
+        self.scan_button.clicked.connect(self.scan_image)
+        self.buttons.append(self.scan_button)
+
+        self.button_widget = QWidget()
+        self.button_widget_layout = QHBoxLayout(self.button_widget)
+        self.button_widget_layout.setAlignment(QtCore.Qt.AlignCenter)
+        self.button_widget_layout.setSpacing(10)
+
+        for button in self.buttons:
+            self.button_widget_layout.addWidget(button)
+
+        # Bottom Widget
+        self.bottom = QWidget()
+        self.bottom_layout = QHBoxLayout(self.bottom)
+        self.bottom_layout.addWidget(self.button_widget)
+
         # Adding all the widgets to the layout
         self.layout = QVBoxLayout(self.central_widget)
-        self.layout.setAlignment(QtCore.Qt.AlignHCenter)
+        self.layout.addWidget(self.top)
+        self.layout.addWidget(self.bottom)
+        '''
         self.layout.addWidget(self.frame)
         self.layout.addWidget(self.button_widget)
         self.layout.addWidget(self.output_label_widget)
+        '''
 
         # video feed thread
         self.thread = VideoThread()
@@ -76,6 +106,10 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event):
         self.thread.stop()
         event.accept()
+
+    def abort(self):
+        self.thread.stop()
+        exit()
 
     @Slot(np.ndarray)
     def update_image(self, frame):
@@ -95,4 +129,12 @@ class MainWindow(QMainWindow):
         cv.imwrite("output/currency.jpg", self.img)
 
         original, usd = visionAPI.get_output()
-        self.output_label.setText(f'{original} = {usd}')
+
+        output_txt = ""
+        if usd == 'ERROR':
+            output_txt = "Sorry, can't read text"
+
+        else:
+            output_txt = f'{original} = {usd}'
+
+        self.output_label.setText(output_txt)
