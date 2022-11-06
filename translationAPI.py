@@ -284,6 +284,6 @@ def get_output():
         if(code == 'ZM'): return '🇿🇲'
         return '🏳'
 
-    return(getFlags(result["detectedSourceLanguage"].upper()), result["translatedText"])
+    return(result["detectedSourceLanguage"], getFlags(result["detectedSourceLanguage"][-2:].upper()), result["translatedText"])
 
-print(get_output())
+# print(get_output())
