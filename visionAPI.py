@@ -38,7 +38,13 @@ def textConvert(input):
            'C$':            'CAD',
            '₹':             'INR',
            'rupee':         'INR',
-           'rupees':        'INR'}
+           'rupees':        'INR',
+           '₱':             'PHP',
+           'peso':          'MXN',
+           'pesos':         'MXN',
+           '₽':             'RUB',
+           'ruble':         'RUB',
+           'rubles':        'RUB'}
 
     splitInput = ["".join(x) for _, x in itertools.groupby(input, key=str.isdigit)]
     for count, value in enumerate(splitInput):
@@ -67,7 +73,7 @@ def currencyConvert(splitInput):
             num = segment
         else:
             currency = segment
-    conversionRate = rates[currency]
+    conversionRate = rates[textConvert(currency)[0]]
     return "$" + str(round(float(num)/conversionRate, 2))
 
 def get_output():
