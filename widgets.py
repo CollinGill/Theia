@@ -1,11 +1,22 @@
 import cv2 as cv
 import numpy as np
-import visionAPI
-import translationAPI
+import math
+import pyaudio
+import soundfile as sf
+import collections
+import audioop
+import time
+import wave
+import os
+import subprocess
 
-from PySide6.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel
+from PySide6.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QGraphicsDropShadowEffect
 from PySide6.QtCore import Signal, Slot, QThread 
 from PySide6 import QtCore, QtGui
+
+import visionAPI
+import translationAPI
+import transcriptionAPI
 
 class VideoThread(QThread):
     pixmap_signal = Signal(np.ndarray)
@@ -29,6 +40,7 @@ class VideoThread(QThread):
 class MainWindow(QMainWindow):
     def __init__(self):
         self.img = None
+
         super().__init__()
         self.setWindowTitle("Theia")
         self.showMaximized()
@@ -40,10 +52,11 @@ class MainWindow(QMainWindow):
         self.disp_w, self.disp_h = 1.5 * 640, 1.5 * 480
         self.frame = QLabel()
         self.frame.resize(self.disp_w, self.disp_h)
-        self.frame.setStyleSheet("border: 10px solid black; border-radius: 15%;")
+        self.frame.setStyleSheet("border: 10px solid black; border-radius: 10%;")
 
         # Output Widget
         self.output_label = QLabel()
+        self.output_label.setWordWrap(True)
         self.output_label.setStyleSheet("QLabel{font-size: 24pt;}")
         self.output_label.setText("")
 
@@ -61,10 +74,9 @@ class MainWindow(QMainWindow):
         self.top_layout.addWidget(self.output_label)
         self.top_layout.addStretch()
 
-        # Scan Button
-        self.button_stylesheet = "QPushButton{font-size: 24pt; border: 5px solid black; border-radius: 15%; padding: 5px;}"
+        # Buttons
+        self.button_stylesheet = "QPushButton{font-size: 24pt; border: 5px outset black; border-radius: 10%; padding: 5px;}"
         self.buttons = []
-
 
         self.quit_button = QPushButton("Quit")
         self.quit_button.setStyleSheet(self.button_stylesheet)
@@ -80,6 +92,11 @@ class MainWindow(QMainWindow):
         self.text_button.setStyleSheet(self.button_stylesheet)
         self.text_button.clicked.connect(self.get_translation)
         self.buttons.append(self.text_button)
+
+        self.speech_button = QPushButton("Speech Transcription")
+        self.speech_button.setStyleSheet(self.button_stylesheet)
+        self.speech_button.clicked.connect(self.get_transcription)
+        self.buttons.append(self.speech_button)
 
         self.button_widget = QWidget()
         self.button_widget_layout = QHBoxLayout(self.button_widget)
@@ -144,13 +161,31 @@ class MainWindow(QMainWindow):
     def get_translation(self):
         cv.imwrite("output/translation.jpg", self.img)
 
-        lang, text = translationAPI.get_output()
+        _, text = translationAPI.get_output()
 
-        output_text = ""
-        if lang == '🏳':
-            output_text = text
+        self.output_label.setText(text)
 
-        else:
-            output_text = f"{lang} {text}"
+    def get_transcription(self):
+        filename = "output.wav"
+        chunk = 1024
+        format = pyaudio.paInt16
+        channels = 1
+        rate = 44100
+        p = pyaudio.PyAudio()
+        stream = p.open(format=format, channels=channels, rate=rate, input=True, output=True, frames_per_buffer=chunk)
+        seconds = 5
 
-        self.output_label.setText(output_text)
+        frames = []
+        for i in range(int(rate / chunk * seconds)):
+            data = stream.read(chunk)
+            frames.append(data)
+        stream.stop_stream()
+        stream.close()
+        p.terminate()
+
+        wf = wave.open(filename, "wb")
+        wf.setnchannels(channels)
+        wf.setsampwidth(p.get_sample_size(format))
+        wf.setframerate(rate)
+        wf.writeframes(b''.join(frames))
+        wf.close()
