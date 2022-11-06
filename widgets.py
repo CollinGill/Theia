@@ -2,7 +2,6 @@ import cv2 as cv
 import numpy as np
 import math
 import pyaudio
-import soundfile as sf
 import collections
 import audioop
 import time
@@ -171,17 +170,34 @@ class MainWindow(QMainWindow):
         format = pyaudio.paInt16
         channels = 1
         rate = 44100
-        p = pyaudio.PyAudio()
-        stream = p.open(format=format, channels=channels, rate=rate, input=True, output=True, frames_per_buffer=chunk)
         seconds = 5
 
+        p = pyaudio.PyAudio()
+
+        print('RECORDING')
+
+        stream = p.open(format=format, 
+                        channels=channels, 
+                        rate=rate, 
+                        input=True, 
+                        # output=True, 
+                        frames_per_buffer=chunk)
+
         frames = []
-        for i in range(int(rate / chunk * seconds)):
+
+
+
+        for i in range(0, int(rate / chunk * seconds)):
+        # while 
             data = stream.read(chunk)
             frames.append(data)
+
+
         stream.stop_stream()
         stream.close()
         p.terminate()
+
+        print('finished recording')
 
         wf = wave.open(filename, "wb")
         wf.setnchannels(channels)
