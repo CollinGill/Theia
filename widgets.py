@@ -165,7 +165,7 @@ class MainWindow(QMainWindow):
         self.output_label.setText(text)
 
     def get_transcription(self):
-        filename = "output.wav"
+        filename = "output/output.wav"
         chunk = 1024
         format = pyaudio.paInt16
         channels = 1
@@ -205,3 +205,4 @@ class MainWindow(QMainWindow):
         wf.setframerate(rate)
         wf.writeframes(b''.join(frames))
         wf.close()
+        os.system(f"flac {filename} -o {filename[:-4] + '.flac'} && rm {filename}")
