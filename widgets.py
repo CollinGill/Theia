@@ -1,5 +1,6 @@
 import cv2 as cv
 import numpy as np
+from threading import Thread
 
 from PySide6.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QGraphicsDropShadowEffect
 from PySide6.QtCore import Signal, Slot, QThread 
@@ -66,7 +67,7 @@ class MainWindow(QMainWindow):
         self.top_layout.addStretch()
 
         # Buttons
-        self.button_stylesheet = "QPushButton{font-size: 24pt; border: 5px outset black; border-radius: 10%; padding: 5px;}"
+        self.button_stylesheet = "QPushButton{font-size: 24pt; border: 5px outset black; border-radius: 10%; padding: 5px;} QPushButton:hover{background-color: #706d65;}"
         self.buttons = []
 
         self.quit_button = QPushButton("Quit")
@@ -97,11 +98,25 @@ class MainWindow(QMainWindow):
         for button in self.buttons:
             self.button_widget_layout.addWidget(button)
 
+        # Logo png
+        self.logo = QLabel()
+        self.logo.setPixmap(QtGui.QPixmap('theia.png'))
+        self.logo.setStyleSheet("border: 5px solid black; border-radius: 10px;")
+        self.logo.resize(200, 100)
+
+        self.logo_widget = QWidget()
+        self.logo_layout = QVBoxLayout(self.logo_widget)
+        self.logo_layout.addStretch()
+        self.logo_layout.addWidget(self.logo)
+        self.logo_layout.addStretch()
+
         # Bottom Widget
         self.bottom = QWidget()
         self.bottom_layout = QHBoxLayout(self.bottom)
         self.bottom_layout.setAlignment(QtCore.Qt.AlignLeft)
         self.bottom_layout.addWidget(self.button_widget)
+        self.bottom_layout.addStretch()
+        self.bottom_layout.addWidget(self.logo_widget)
 
         # Adding all the widgets to the layout
         self.layout = QVBoxLayout(self.central_widget)

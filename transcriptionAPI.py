@@ -4,7 +4,6 @@ import six
 from google.cloud import vision_v1
 from google.cloud import translate_v2 as translate
 
-from google.cloud.vision_v1 import types
 from google.cloud import speech_v1p1beta1 as speech
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'ServiceAccountToken.json'
@@ -17,7 +16,6 @@ def transcribe_file():
         content = audio_file.read()
 
     audio = speech.RecognitionAudio(content=content)
-
 
     config = speech.RecognitionConfig(
         language_code="en-US",
