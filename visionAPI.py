@@ -45,9 +45,9 @@ def textConvert(input):
     splitOutput = []
     for segment in splitInput:
         if segment.lower() in dct:
-            splitOutput.append(dct[segment.lower()])
+            splitOutput.append(dct[segment.lower().strip()])
         elif segment[0].isnumeric:
-            splitOutput.append(segment)
+            splitOutput.append(segment.strip())
         else: 
             return "There was an error, scanned something it shouldn't have"
     return splitOutput
