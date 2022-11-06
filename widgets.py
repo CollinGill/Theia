@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
 import visionAPI
+import translationAPI
 
 from PySide6.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel
 from PySide6.QtCore import Signal, Slot, QThread 
@@ -66,14 +67,19 @@ class MainWindow(QMainWindow):
 
 
         self.quit_button = QPushButton("Quit")
-        self.quit_button.clicked.connect(self.abort)
         self.quit_button.setStyleSheet(self.button_stylesheet)
+        self.quit_button.clicked.connect(self.abort)
         self.buttons.append(self.quit_button)
 
-        self.scan_button = QPushButton("Scan")
+        self.scan_button = QPushButton("Currency Conversion")
         self.scan_button.setStyleSheet(self.button_stylesheet)
-        self.scan_button.clicked.connect(self.scan_image)
+        self.scan_button.clicked.connect(self.get_exchange)
         self.buttons.append(self.scan_button)
+
+        self.text_button = QPushButton("Text Translation")
+        self.text_button.setStyleSheet(self.button_stylesheet)
+        self.text_button.clicked.connect(self.get_translation)
+        self.buttons.append(self.text_button)
 
         self.button_widget = QWidget()
         self.button_widget_layout = QHBoxLayout(self.button_widget)
@@ -86,17 +92,13 @@ class MainWindow(QMainWindow):
         # Bottom Widget
         self.bottom = QWidget()
         self.bottom_layout = QHBoxLayout(self.bottom)
+        self.bottom_layout.setAlignment(QtCore.Qt.AlignLeft)
         self.bottom_layout.addWidget(self.button_widget)
 
         # Adding all the widgets to the layout
         self.layout = QVBoxLayout(self.central_widget)
         self.layout.addWidget(self.top)
         self.layout.addWidget(self.bottom)
-        '''
-        self.layout.addWidget(self.frame)
-        self.layout.addWidget(self.button_widget)
-        self.layout.addWidget(self.output_label_widget)
-        '''
 
         # video feed thread
         self.thread = VideoThread()
@@ -125,7 +127,7 @@ class MainWindow(QMainWindow):
         scaled = qt_fmt.scaled(self.disp_w, self.disp_h, QtCore.Qt.KeepAspectRatio)
         return QtGui.QPixmap.fromImage(scaled)
 
-    def scan_image(self):
+    def get_exchange(self):
         cv.imwrite("output/currency.jpg", self.img)
 
         original, usd = visionAPI.get_output()
@@ -138,3 +140,17 @@ class MainWindow(QMainWindow):
             output_txt = f'{original} = {usd}'
 
         self.output_label.setText(output_txt)
+
+    def get_translation(self):
+        cv.imwrite("output/translation.jpg", self.img)
+
+        lang, text = translationAPI.get_output()
+
+        output_text = ""
+        if lang == '🏳':
+            output_text = text
+
+        else:
+            output_text = f"{lang} {text}"
+
+        self.output_label.setText(output_text)

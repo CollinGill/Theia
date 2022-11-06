@@ -285,5 +285,3 @@ def get_output():
         return '🏳'
 
     return(getFlags(result["detectedSourceLanguage"].upper()), result["translatedText"])
-
-print(get_output())
