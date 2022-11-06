@@ -276,6 +276,4 @@ def get_output():
         docText = docText.decode("utf-8")
     
     result = translate_client.translate(docText, target_language='en')
-
-
-    return(getFlags(result["detectedSourceLanguage"].upper()), result["translatedText"])
+    return(getFlags(result["detectedSourceLanguage"].upper()[-2:]), result["translatedText"])

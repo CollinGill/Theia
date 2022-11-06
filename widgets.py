@@ -86,7 +86,7 @@ class MainWindow(QMainWindow):
 
         self.speech_button = QPushButton("Speech Transcription")
         self.speech_button.setStyleSheet(self.button_stylesheet)
-        self.speech_button.clicked.connect(self.get_translation)
+        self.speech_button.clicked.connect(self.get_transcription)
         self.buttons.append(self.speech_button)
 
         self.button_widget = QWidget()
@@ -161,4 +161,6 @@ class MainWindow(QMainWindow):
         self.output_label.setText(output_text)
 
     def get_transcription(self):
-        print("Gabe fix this plz")
+        output_text = transcriptionAPI.transcribe_file()
+        self.output_label.setText(output_text[0] + "\n" + output_text[1])
+    

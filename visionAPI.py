@@ -78,8 +78,6 @@ def get_output():
     response = client.document_text_detection(image=image)
     docText = response.full_text_annotation.text
 
-
-
     orig = docText
     USD = currencyConvert(textConvert(docText))
     return (orig, USD)
